@@ -1,0 +1,60 @@
+name: Go Test and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.23.2
+
+      - name: Install dependencies
+        run: go mod tidy
+        working-directory: functions/first-function/src
+
+      - name: Run tests
+        run: go test ./...
+        working-directory: functions/first-function/src
+
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.23.2
+
+      - name: Build Go application
+        working-directory: functions/first-function/src
+        run: |
+          go build -o bin/bootstrap lambda.go
+          zip -j bin/lambda.zip bin/bootstrap
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Initialize Terraform
+        working-directory: .
+        run: terraform init
+
+      - name: Apply Terraform
+        working-directory: .
+        run: terraform apply -auto-approve
