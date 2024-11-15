@@ -15,9 +15,3 @@ variable "aws_region" {
   type        = string
   default     = "eu-west-3"
 }
-
-data "archive_file" "lambda" {
-  type        = "zip"
-  source_file = "functions/first-function/src/bin/bootstrap"
-  output_path = "functions/first-function/src/bin/lambda.zip"
-}

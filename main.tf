@@ -38,9 +38,10 @@ resource "aws_iam_role" "function_role" {
 # Create the function
 data "archive_file" "lambda" {
   type        = "zip"
-  source_file = "functions/first-function/src/bin/boostrap"
+  source_file = "functions/first-function/src/bin/bootstrap"
   output_path = "functions/first-function/src/bin/lambda.zip"
 }
+
 
 resource "aws_kms_key" "log_group_key" {}
 
