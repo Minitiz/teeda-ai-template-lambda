@@ -51,7 +51,7 @@ jobs:
       - name: Build Go application
         working-directory: functions/first-function/src
         run: |
-          go build -o bin/bootstrap lambda.go
+          GOOS=linux GOARCH=amd64 go build -o bin/bootstrap lambda.go
           zip -j bin/lambda.zip bin/bootstrap
 
       - name: Install Terraform
