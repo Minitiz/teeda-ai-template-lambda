@@ -83,7 +83,7 @@ resource "aws_lambda_function" "test_lambda" {
   function_name    = "HelloFunction-${random_string.random.id}"
   role             = aws_iam_role.function_role.arn
   handler          = "bootstrap"
-  runtime          = "go1.20"
+  runtime          = "provided.al2023"
   filename         = "functions/first-function/src/bin/lambda.zip"
   source_code_hash = data.archive_file.lambda.output_base64sha256
 }
