@@ -168,3 +168,5 @@ resource "aws_cloudwatch_log_group" "MySFNLogGroup" {
   retention_in_days = 1
   kms_key_id        = aws_kms_key.log_group_key.arn
 }
+
+
