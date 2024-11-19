@@ -24,8 +24,8 @@ resource "aws_apigatewayv2_route" "test_route" {
   route_key          = "GET /test"
   authorization_type = "JWT"
   authorizer_id      = aws_apigatewayv2_authorizer.auth0.id
+  target             = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
-
 
 output "api_endpoint" {
   value = aws_apigatewayv2_stage.default.invoke_url
@@ -61,4 +61,22 @@ resource "aws_apigatewayv2_authorizer" "auth0" {
     audience = [var.auth0_audience]
     issuer   = "https://${var.auth0_issuer}/"
   }
+}
+
+# Add the integration
+resource "aws_apigatewayv2_integration" "lambda_integration" {
+  api_id                 = aws_apigatewayv2_api.main_api.id
+  integration_type       = "AWS_PROXY"
+  integration_method     = "POST"
+  integration_uri        = aws_lambda_function.test_lambda.invoke_arn
+  payload_format_version = "2.0"
+}
+
+# Add permission for API Gateway to invoke Lambda
+resource "aws_lambda_permission" "api_gw" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.test_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.main_api.execution_arn}/*/*"
 }
